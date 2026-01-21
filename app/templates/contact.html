@@ -1,0 +1,186 @@
+{% extends "base.html" %}
+
+{% block title %}Contact Us - BJJ School{% endblock %}
+
+{% block content %}
+<div class="contact-page">
+    <h1>Contact Us</h1>
+    <p>Have questions? We'd love to hear from you. Send us a message and we'll respond as soon as possible.</p>
+    
+    <!-- Flash messages for confirmation or errors (Requirements 2.4, 2.6) -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    
+    <!-- Contact Form (Requirement 2.1) -->
+    <form method="POST" action="{{ url_for('contact.contact') }}" novalidate>
+        {{ form.hidden_tag() }}  {# CSRF token (Requirement 2.5) #}
+        
+        <div class="form-group">
+            {{ form.name.label }}
+            {{ form.name(class="form-control") }}
+            {% if form.name.errors %}
+                <div class="error-messages">
+                    {% for error in form.name.errors %}
+                        <span class="error">{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            {{ form.email.label }}
+            {{ form.email(class="form-control", type="email") }}
+            {% if form.email.errors %}
+                <div class="error-messages">
+                    {% for error in form.email.errors %}
+                        <span class="error">{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            {{ form.phone.label }} <span class="optional">(Optional)</span>
+            {{ form.phone(class="form-control", type="tel") }}
+            {% if form.phone.errors %}
+                <div class="error-messages">
+                    {% for error in form.phone.errors %}
+                        <span class="error">{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            {{ form.message.label }}
+            {{ form.message(class="form-control", rows="5") }}
+            {% if form.message.errors %}
+                <div class="error-messages">
+                    {% for error in form.message.errors %}
+                        <span class="error">{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            {{ form.submit(class="btn btn-primary") }}
+        </div>
+    </form>
+</div>
+
+<style>
+    /* Basic styling for contact form */
+    .contact-page {
+        max-width: 600px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+    
+    .contact-page h1 {
+        margin-bottom: 1rem;
+    }
+    
+    .contact-page p {
+        margin-bottom: 2rem;
+        color: #666;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: bold;
+    }
+    
+    .form-group .optional {
+        font-weight: normal;
+        color: #666;
+        font-size: 0.9em;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+    }
+    
+    .error-messages {
+        margin-top: 0.25rem;
+    }
+    
+    .error {
+        display: block;
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+    
+    .flash-messages {
+        margin-bottom: 1.5rem;
+    }
+    
+    .alert {
+        padding: 1rem;
+        border-radius: 4px;
+        margin-bottom: 1rem;
+    }
+    
+    .alert-success {
+        background-color: #d4edda;
+        border: 1px solid #c3e6cb;
+        color: #155724;
+    }
+    
+    .alert-error {
+        background-color: #f8d7da;
+        border: 1px solid #f5c6cb;
+        color: #721c24;
+    }
+    
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 4px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    
+    .btn-primary {
+        background-color: #007bff;
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+    
+    /* Responsive design */
+    @media (max-width: 768px) {
+        .contact-page {
+            margin: 1rem auto;
+        }
+    }
+</style>
+{% endblock %}

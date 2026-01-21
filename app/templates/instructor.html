@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Instructor - BJJ School{% endblock %}
+
+{% block content %}
+<div class="instructor-container">
+    <section class="instructor-header">
+        <h1>Meet Your Instructor</h1>
+    </section>
+
+    <section class="instructor-bio">
+        <h2>{{ instructor.name }}</h2>
+        <p class="bio-text">{{ instructor.bio }}</p>
+    </section>
+
+    <section class="instructor-qualifications">
+        <h3>Qualifications & Certifications</h3>
+        <ul class="qualifications-list">
+            {% for qualification in instructor.qualifications %}
+                <li>{{ qualification }}</li>
+            {% endfor %}
+        </ul>
+    </section>
+
+    <section class="instructor-training-history">
+        <h3>Training History</h3>
+        <ul class="training-history-list">
+            {% for history_item in instructor.training_history %}
+                <li>{{ history_item }}</li>
+            {% endfor %}
+        </ul>
+    </section>
+
+    <section class="cta-section">
+        <p>Ready to start your BJJ journey?</p>
+        <div class="cta-buttons">
+            <a href="{{ url_for('booking.booking') }}" class="btn btn-primary">Book a Trial Class</a>
+            <a href="{{ url_for('contact.contact') }}" class="btn btn-secondary">Contact Us</a>
+        </div>
+    </section>
+</div>
+{% endblock %}

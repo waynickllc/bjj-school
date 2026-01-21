@@ -1,0 +1,192 @@
+{% extends "base.html" %}
+
+{% block title %}Book Trial Class - BJJ School{% endblock %}
+
+{% block content %}
+<div class="booking-page">
+    <h1>Book a Trial Class</h1>
+    <p>Ready to start your Brazilian Jiu-Jitsu journey? Book a free trial class and experience our training firsthand.</p>
+    
+    <!-- Flash messages for confirmation or errors (Requirements 3.4, 3.6) -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-messages">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    
+    <!-- Trial Booking Form (Requirement 3.1) -->
+    <form method="POST" action="{{ url_for('booking.booking') }}" novalidate>
+        {{ form.hidden_tag() }}  {# CSRF token (Requirement 3.5) #}
+        
+        <div class="form-group">
+            {{ form.name.label }}
+            {{ form.name(class="form-control") }}
+            {% if form.name.errors %}
+                <div class="error-messages">
+                    {% for error in form.name.errors %}
+                        <span class="error">{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            {{ form.email.label }}
+            {{ form.email(class="form-control", type="email") }}
+            {% if form.email.errors %}
+                <div class="error-messages">
+                    {% for error in form.email.errors %}
+                        <span class="error">{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            {{ form.phone.label }}
+            {{ form.phone(class="form-control", type="tel") }}
+            {% if form.phone.errors %}
+                <div class="error-messages">
+                    {% for error in form.phone.errors %}
+                        <span class="error">{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            {{ form.preferred_date.label }}
+            {{ form.preferred_date(class="form-control", type="date") }}
+            {% if form.preferred_date.errors %}
+                <div class="error-messages">
+                    {% for error in form.preferred_date.errors %}
+                        <span class="error">{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            {{ form.preferred_time.label }}
+            {{ form.preferred_time(class="form-control") }}
+            {% if form.preferred_time.errors %}
+                <div class="error-messages">
+                    {% for error in form.preferred_time.errors %}
+                        <span class="error">{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            {{ form.submit(class="btn btn-primary") }}
+        </div>
+    </form>
+</div>
+
+<style>
+    /* Basic styling for booking form */
+    .booking-page {
+        max-width: 600px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+    }
+    
+    .booking-page h1 {
+        margin-bottom: 1rem;
+    }
+    
+    .booking-page p {
+        margin-bottom: 2rem;
+        color: #666;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: bold;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 0.5rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: #007bff;
+        box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
+    }
+    
+    .error-messages {
+        margin-top: 0.25rem;
+    }
+    
+    .error {
+        display: block;
+        color: #dc3545;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+    
+    .flash-messages {
+        margin-bottom: 1.5rem;
+    }
+    
+    .alert {
+        padding: 1rem;
+        border-radius: 4px;
+        margin-bottom: 1rem;
+    }
+    
+    .alert-success {
+        background-color: #d4edda;
+        border: 1px solid #c3e6cb;
+        color: #155724;
+    }
+    
+    .alert-error {
+        background-color: #f8d7da;
+        border: 1px solid #f5c6cb;
+        color: #721c24;
+    }
+    
+    .btn {
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 4px;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    
+    .btn-primary {
+        background-color: #007bff;
+        color: white;
+    }
+    
+    .btn-primary:hover {
+        background-color: #0056b3;
+    }
+    
+    /* Responsive design */
+    @media (max-width: 768px) {
+        .booking-page {
+            margin: 1rem auto;
+        }
+    }
+</style>
+{% endblock %}

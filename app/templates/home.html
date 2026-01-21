@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Home - BJJ School{% endblock %}
+
+{% block content %}
+<div class="home-container">
+    <section class="hero">
+        <h1>Welcome to Our BJJ School</h1>
+        <p>Train with experienced instructors and join our community</p>
+        <div class="cta-buttons">
+            <a href="{{ url_for('booking.booking') }}" class="btn btn-primary">Book a Trial Class</a>
+            <a href="{{ url_for('contact.contact') }}" class="btn btn-secondary">Contact Us</a>
+        </div>
+    </section>
+
+    <section class="instagram-carousel">
+        <h2>Our Community</h2>
+        
+        {% if instagram_error %}
+            <!-- Display fallback message when Instagram photos unavailable -->
+            <div class="instagram-error alert alert-info">
+                <p>{{ instagram_error }}</p>
+            </div>
+        {% elif instagram_photos and instagram_photos|length > 0 %}
+            <!-- Display Instagram photos in a carousel -->
+            <div class="carousel">
+                {% for photo in instagram_photos %}
+                    <div class="carousel-item">
+                        <a href="{{ photo.permalink }}" target="_blank" rel="noopener noreferrer">
+                            <img src="{{ photo.media_url }}" alt="{{ photo.caption if photo.caption else 'Instagram photo from BJJ School' }}" loading="lazy">
+                            {% if photo.caption %}
+                                <p class="caption">{{ photo.caption[:100] }}{% if photo.caption|length > 100 %}...{% endif %}</p>
+                            {% endif %}
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <!-- Display message when no photos available -->
+            <div class="instagram-empty alert alert-info">
+                <p>No photos available at this time. Check back soon!</p>
+            </div>
+        {% endif %}
+    </section>
+
+    <section class="about-preview">
+        <h2>About Our School</h2>
+        <p>We offer high-quality Brazilian Jiu-Jitsu training for all skill levels, from beginners to advanced practitioners.</p>
+        <a href="{{ url_for('main.instructor') }}" class="btn btn-link">Meet Our Instructor</a>
+    </section>
+</div>
+{% endblock %}
