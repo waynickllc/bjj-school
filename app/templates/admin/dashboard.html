@@ -1,0 +1,42 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Admin Dashboard - BJJ School{% endblock %}
+
+{% block admin_content %}
+<div class="admin-dashboard">
+    <h1>Admin Dashboard</h1>
+    <p>Welcome to the BJJ School admin dashboard. Use the navigation menu to manage your content.</p>
+    
+    <div class="dashboard-cards">
+        <div class="dashboard-card">
+            <h3>Classes</h3>
+            <p>Manage your class schedule</p>
+            <a href="{{ url_for('admin.list_classes') }}" class="btn btn-primary">Manage Classes</a>
+        </div>
+        
+        <div class="dashboard-card">
+            <h3>Announcements</h3>
+            <p>Post news and updates</p>
+            <a href="{{ url_for('admin.list_announcements') }}" class="btn btn-primary">Manage Announcements</a>
+        </div>
+        
+        <div class="dashboard-card">
+            <h3>FAQs</h3>
+            <p>Update frequently asked questions</p>
+            <a href="{{ url_for('admin.list_faqs') }}" class="btn btn-primary">Manage FAQs</a>
+        </div>
+        
+        <div class="dashboard-card">
+            <h3>Site Settings</h3>
+            <p>Update banner and logo</p>
+            <a href="{{ url_for('admin.site_settings') }}" class="btn btn-primary">Manage Settings</a>
+        </div>
+        
+        <div class="dashboard-card">
+            <h3>My Profile</h3>
+            <p>Update your instructor profile</p>
+            <a href="#" class="btn btn-primary">Edit Profile</a>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
+    <title>{% block title %}Admin - BJJ School{% endblock %}</title>
+    
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    
+    {% block extra_css %}{% endblock %}
+</head>
+<body class="admin-body">
+    <!-- Admin Navigation -->
+    <nav class="admin-navbar">
+        <div class="admin-nav-header">
+            <a href="{{ url_for('main.home') }}" class="admin-brand">
+                BJJ SCHOOL ADMIN
+            </a>
+        </div>
+        <ul class="admin-nav-menu">
+            <li><a href="{{ url_for('admin.dashboard') }}" class="{% if request.endpoint == 'admin.dashboard' %}active{% endif %}">Dashboard</a></li>
+            <li><a href="{{ url_for('admin.list_classes') }}" class="{% if 'classes' in request.endpoint %}active{% endif %}">Classes</a></li>
+            <li><a href="{{ url_for('admin.list_announcements') }}" class="{% if 'announcements' in request.endpoint %}active{% endif %}">Announcements</a></li>
+            <li><a href="{{ url_for('admin.list_faqs') }}" class="{% if 'faqs' in request.endpoint %}active{% endif %}">FAQs</a></li>
+            <li><a href="{{ url_for('admin.site_settings') }}" class="{% if 'settings' in request.endpoint %}active{% endif %}">Settings</a></li>
+            <li><a href="{{ url_for('admin.instructor_profile') }}" class="{% if 'profile' in request.endpoint %}active{% endif %}">My Profile</a></li>
+            <li><a href="{{ url_for('auth.logout') }}" class="logout-link">Logout</a></li>
+        </ul>
+    </nav>
+    
+    <!-- Flash Messages -->
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-container">
+                {% for category, message in messages %}
+                    <div class="alert alert-{{ 'success' if category == 'success' else 'error' if category == 'error' else 'info' }}">
+                        {{ message }}
+                        <button class="alert-close" onclick="this.parentElement.remove()">&times;</button>
+                    </div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
+    
+    <!-- Admin Content -->
+    <main class="admin-main">
+        <div class="admin-container">
+            {% block admin_content %}{% endblock %}
+        </div>
+    </main>
+    
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

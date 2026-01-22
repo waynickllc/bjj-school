@@ -1,0 +1,139 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Manage FAQs - Admin - BJJ School{% endblock %}
+
+{% block admin_content %}
+<div class="admin-header">
+    <h1>Manage FAQs</h1>
+    <a href="{{ url_for('admin.create_faq') }}" class="btn btn-primary">Create New FAQ</a>
+</div>
+
+{% if faqs %}
+    <div class="admin-table-container">
+        <table class="admin-table" id="faq-table">
+            <thead>
+                <tr>
+                    <th style="width: 50px;">Order</th>
+                    <th>Question</th>
+                    <th>Answer Preview</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="faq-tbody">
+                {% for faq in faqs %}
+                <tr data-faq-id="{{ faq.id }}" class="faq-row">
+                    <td class="drag-handle" style="cursor: move; text-align: center;">
+                        <span class="drag-icon">☰</span>
+                        <span class="order-number">{{ loop.index }}</span>
+                    </td>
+                    <td>{{ faq.question }}</td>
+                    <td class="content-preview">
+                        {% if faq.answer|length > 100 %}
+                            {{ faq.answer[:100] }}...
+                        {% else %}
+                            {{ faq.answer }}
+                        {% endif %}
+                    </td>
+                    <td class="admin-actions">
+                        <a href="{{ url_for('admin.edit_faq', id=faq.id) }}" class="btn btn-small btn-secondary">Edit</a>
+                        <form method="POST" action="{{ url_for('admin.delete_faq', id=faq.id) }}" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this FAQ?');">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn btn-small btn-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="admin-info-box">
+        <p><strong>Tip:</strong> Drag and drop rows to reorder FAQs. The order will be saved automatically.</p>
+    </div>
+    
+    <script>
+        // Simple drag and drop functionality for reordering FAQs
+        let draggedRow = null;
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            const tbody = document.getElementById('faq-tbody');
+            const rows = tbody.querySelectorAll('.faq-row');
+            
+            rows.forEach(row => {
+                row.setAttribute('draggable', 'true');
+                
+                row.addEventListener('dragstart', function(e) {
+                    draggedRow = this;
+                    this.style.opacity = '0.5';
+                });
+                
+                row.addEventListener('dragend', function(e) {
+                    this.style.opacity = '';
+                    draggedRow = null;
+                    updateOrderNumbers();
+                });
+                
+                row.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    if (draggedRow && draggedRow !== this) {
+                        const rect = this.getBoundingClientRect();
+                        const midpoint = rect.top + rect.height / 2;
+                        if (e.clientY < midpoint) {
+                            this.parentNode.insertBefore(draggedRow, this);
+                        } else {
+                            this.parentNode.insertBefore(draggedRow, this.nextSibling);
+                        }
+                    }
+                });
+                
+                row.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    saveNewOrder();
+                });
+            });
+        });
+        
+        function updateOrderNumbers() {
+            const rows = document.querySelectorAll('.faq-row');
+            rows.forEach((row, index) => {
+                const orderSpan = row.querySelector('.order-number');
+                if (orderSpan) {
+                    orderSpan.textContent = index + 1;
+                }
+            });
+        }
+        
+        function saveNewOrder() {
+            const rows = document.querySelectorAll('.faq-row');
+            const faqIds = Array.from(rows).map(row => parseInt(row.dataset.faqId));
+            
+            fetch('{{ url_for("admin.reorder_faqs") }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ faq_ids: faqIds })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Show success message (optional)
+                    console.log('FAQs reordered successfully');
+                } else {
+                    alert('Error reordering FAQs: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error reordering FAQs');
+            });
+        }
+    </script>
+{% else %}
+    <div class="admin-empty-state">
+        <p>No FAQs have been created yet.</p>
+        <a href="{{ url_for('admin.create_faq') }}" class="btn btn-primary">Create Your First FAQ</a>
+    </div>
+{% endif %}
+{% endblock %}

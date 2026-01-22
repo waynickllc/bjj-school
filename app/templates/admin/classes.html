@@ -1,0 +1,48 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Manage Classes - Admin - BJJ School{% endblock %}
+
+{% block admin_content %}
+<div class="admin-header">
+    <h1>Manage Classes</h1>
+    <a href="{{ url_for('admin.create_class') }}" class="btn btn-primary">Create New Class</a>
+</div>
+
+{% if classes %}
+    <div class="admin-table-container">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Class Name</th>
+                    <th>Day of Week</th>
+                    <th>Start Time</th>
+                    <th>End Time</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for class in classes %}
+                <tr>
+                    <td>{{ class.name }}</td>
+                    <td>{{ class.day_of_week }}</td>
+                    <td>{{ class.start_time.strftime('%I:%M %p') }}</td>
+                    <td>{{ class.end_time.strftime('%I:%M %p') }}</td>
+                    <td class="admin-actions">
+                        <a href="{{ url_for('admin.edit_class', id=class.id) }}" class="btn btn-small btn-secondary">Edit</a>
+                        <form method="POST" action="{{ url_for('admin.delete_class', id=class.id) }}" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this class?');">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                            <button type="submit" class="btn btn-small btn-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% else %}
+    <div class="admin-empty-state">
+        <p>No classes have been created yet.</p>
+        <a href="{{ url_for('admin.create_class') }}" class="btn btn-primary">Create Your First Class</a>
+    </div>
+{% endif %}
+{% endblock %}

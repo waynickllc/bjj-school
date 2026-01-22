@@ -1,37 +1,243 @@
 {% extends "base.html" %}
 
-{% block title %}Instructor - BJJ School{% endblock %}
+{% block title %}Instructors - BJJ School{% endblock %}
+
+{% block extra_css %}
+<style>
+    .instructor-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 3rem 2rem;
+    }
+    
+    .instructor-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+    
+    .instructor-header h1 {
+        font-size: 3rem;
+        font-weight: 900;
+        color: var(--secondary);
+        margin-bottom: 0.5rem;
+    }
+    
+    .instructors-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+        gap: 2.5rem;
+        margin-bottom: 3rem;
+    }
+    
+    .instructor-card {
+        background: var(--bg-alt);
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px var(--shadow);
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+    
+    .instructor-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 8px 24px var(--shadow);
+    }
+    
+    .instructor-photo-container {
+        width: 100%;
+        height: 350px;
+        overflow: hidden;
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+    
+    .instructor-photo {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .instructor-photo-placeholder {
+        width: 150px;
+        height: 150px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 4rem;
+        color: var(--bg);
+        font-weight: 900;
+    }
+    
+    .head-instructor-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        background: var(--secondary);
+        color: var(--bg);
+        padding: 0.5rem 1rem;
+        border-radius: 4px;
+        font-weight: 700;
+        font-size: 0.9rem;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+    
+    .instructor-info {
+        padding: 2rem;
+    }
+    
+    .instructor-name {
+        font-size: 1.75rem;
+        font-weight: 900;
+        color: var(--secondary);
+        margin-bottom: 0.5rem;
+    }
+    
+    .instructor-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--primary);
+        margin-bottom: 1.5rem;
+    }
+    
+    .instructor-bio {
+        font-size: 1rem;
+        line-height: 1.7;
+        color: var(--text);
+    }
+    
+    .no-instructors {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: var(--bg-alt);
+        border-radius: 8px;
+        margin: 2rem 0;
+    }
+    
+    .no-instructors h2 {
+        font-size: 2rem;
+        color: var(--secondary);
+        margin-bottom: 1rem;
+    }
+    
+    .no-instructors p {
+        font-size: 1.1rem;
+        color: var(--text);
+    }
+    
+    .cta-section {
+        text-align: center;
+        padding: 3rem 2rem;
+        background: linear-gradient(135deg, var(--secondary) 0%, var(--primary-dark) 100%);
+        border-radius: 8px;
+        color: var(--bg);
+        margin-top: 3rem;
+    }
+    
+    .cta-section p {
+        font-size: 1.5rem;
+        margin-bottom: 2rem;
+        font-weight: 600;
+    }
+    
+    .cta-section .cta-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .cta-section .btn-secondary {
+        background: transparent;
+        border: 2px solid var(--bg);
+        color: var(--bg);
+    }
+    
+    .cta-section .btn-secondary:hover {
+        background: var(--bg);
+        color: var(--secondary);
+    }
+    
+    @media (max-width: 768px) {
+        .instructor-container {
+            padding: 2rem 1rem;
+        }
+        
+        .instructor-header h1 {
+            font-size: 2.5rem;
+        }
+        
+        .instructors-grid {
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+        
+        .instructor-photo-container {
+            height: 300px;
+        }
+        
+        .instructor-info {
+            padding: 1.5rem;
+        }
+        
+        .cta-section .cta-buttons {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .cta-section .btn {
+            width: 100%;
+            max-width: 300px;
+        }
+    }
+</style>
+{% endblock %}
 
 {% block content %}
 <div class="instructor-container">
-    <section class="instructor-header">
-        <h1>Meet Your Instructor</h1>
+    <section class="instructor-header scroll-reveal">
+        <h1>Meet Our Instructors</h1>
     </section>
 
-    <section class="instructor-bio">
-        <h2>{{ instructor.name }}</h2>
-        <p class="bio-text">{{ instructor.bio }}</p>
-    </section>
-
-    <section class="instructor-qualifications">
-        <h3>Qualifications & Certifications</h3>
-        <ul class="qualifications-list">
-            {% for qualification in instructor.qualifications %}
-                <li>{{ qualification }}</li>
+    {% if has_instructors %}
+        <div class="instructors-grid">
+            {% for instructor in instructors %}
+                <article class="instructor-card scroll-reveal-scale animate-delay-{{ loop.index if loop.index <= 6 else 6 }}">
+                    <div class="instructor-photo-container">
+                        {% if instructor.photo_path %}
+                            <img src="{{ url_for('static', filename=instructor.photo_path) }}" 
+                                 alt="{{ instructor.user.username }}" 
+                                 class="instructor-photo">
+                        {% else %}
+                            <div class="instructor-photo-placeholder">
+                                {{ instructor.user.username[0].upper() }}
+                            </div>
+                        {% endif %}
+                        
+                        {% if instructor.is_head_instructor %}
+                            <div class="head-instructor-badge">Head Instructor</div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="instructor-info">
+                        <h2 class="instructor-name">{{ instructor.user.username }}</h2>
+                        <p class="instructor-title">{{ instructor.title }}</p>
+                        <p class="instructor-bio">{{ instructor.biography }}</p>
+                    </div>
+                </article>
             {% endfor %}
-        </ul>
-    </section>
+        </div>
+    {% else %}
+        <div class="no-instructors scroll-reveal">
+            <h2>No Instructors Available</h2>
+            <p>Please check back later for instructor information.</p>
+        </div>
+    {% endif %}
 
-    <section class="instructor-training-history">
-        <h3>Training History</h3>
-        <ul class="training-history-list">
-            {% for history_item in instructor.training_history %}
-                <li>{{ history_item }}</li>
-            {% endfor %}
-        </ul>
-    </section>
-
-    <section class="cta-section">
+    <section class="cta-section scroll-reveal-scale">
         <p>Ready to start your BJJ journey?</p>
         <div class="cta-buttons">
             <a href="{{ url_for('booking.booking') }}" class="btn btn-primary">Book a Trial Class</a>

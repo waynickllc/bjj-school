@@ -1,0 +1,248 @@
+{% extends "base.html" %}
+
+{% block title %}FAQ - BJJ School{% endblock %}
+
+{% block extra_css %}
+<style>
+    .faq-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 3rem 2rem;
+    }
+    
+    .faq-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+    
+    .faq-header h1 {
+        font-size: 3rem;
+        font-weight: 900;
+        color: var(--secondary);
+        margin-bottom: 0.5rem;
+    }
+    
+    .faq-header p {
+        font-size: 1.2rem;
+        color: var(--text-light);
+    }
+    
+    .no-faqs-message {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: var(--bg-alt);
+        border-radius: 8px;
+        margin: 2rem 0;
+    }
+    
+    .no-faqs-message h2 {
+        font-size: 2rem;
+        color: var(--secondary);
+        margin-bottom: 1rem;
+    }
+    
+    .no-faqs-message p {
+        font-size: 1.1rem;
+        color: var(--text-light);
+        margin-bottom: 2rem;
+    }
+    
+    .faq-list {
+        display: grid;
+        gap: 1.5rem;
+    }
+    
+    .faq-item {
+        background: var(--bg-alt);
+        border-radius: 8px;
+        border-left: 4px solid var(--primary);
+        box-shadow: 0 2px 8px var(--shadow);
+        overflow: hidden;
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+    
+    .faq-item:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px var(--shadow);
+    }
+    
+    .faq-question {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 1.5rem 2rem;
+        cursor: pointer;
+        user-select: none;
+        transition: background-color 0.3s;
+    }
+    
+    .faq-question:hover {
+        background: rgba(51, 110, 146, 0.05);
+    }
+    
+    .faq-question h3 {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: var(--secondary);
+        margin: 0;
+        flex: 1;
+        padding-right: 1rem;
+    }
+    
+    .faq-toggle {
+        font-size: 1.5rem;
+        color: var(--primary);
+        font-weight: 700;
+        transition: transform 0.3s;
+        flex-shrink: 0;
+    }
+    
+    .faq-item.active .faq-toggle {
+        transform: rotate(45deg);
+    }
+    
+    .faq-answer {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+    }
+    
+    .faq-item.active .faq-answer {
+        max-height: 1000px;
+        transition: max-height 0.5s ease-in, padding 0.3s ease-in;
+    }
+    
+    .faq-answer-content {
+        padding: 0 2rem 1.5rem 2rem;
+        font-size: 1.1rem;
+        line-height: 1.8;
+        color: var(--text);
+        white-space: pre-wrap;
+    }
+    
+    .cta-section {
+        text-align: center;
+        padding: 3rem 2rem;
+        background: linear-gradient(135deg, var(--secondary) 0%, var(--primary-dark) 100%);
+        border-radius: 8px;
+        color: var(--bg);
+        margin-top: 3rem;
+    }
+    
+    .cta-section p {
+        font-size: 1.5rem;
+        margin-bottom: 2rem;
+        font-weight: 600;
+    }
+    
+    .cta-section .cta-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .cta-section .btn-secondary {
+        background: transparent;
+        border: 2px solid var(--bg);
+        color: var(--bg);
+    }
+    
+    .cta-section .btn-secondary:hover {
+        background: var(--bg);
+        color: var(--secondary);
+    }
+    
+    @media (max-width: 768px) {
+        .faq-container {
+            padding: 2rem 1rem;
+        }
+        
+        .faq-header h1 {
+            font-size: 2.5rem;
+        }
+        
+        .faq-question {
+            padding: 1.25rem 1.5rem;
+        }
+        
+        .faq-question h3 {
+            font-size: 1.1rem;
+        }
+        
+        .faq-answer-content {
+            padding: 0 1.5rem 1.25rem 1.5rem;
+        }
+        
+        .cta-section .cta-buttons {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .cta-section .btn {
+            width: 100%;
+            max-width: 300px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="faq-container">
+    <section class="faq-header scroll-reveal">
+        <h1>Frequently Asked Questions</h1>
+        <p>Find answers to common questions about our school and training</p>
+    </section>
+
+    {% if has_faqs %}
+        <div class="faq-list">
+            {% for faq in faqs %}
+                <div class="faq-item scroll-reveal-left animate-delay-{{ loop.index if loop.index <= 6 else 6 }}">
+                    <div class="faq-question" onclick="toggleFAQ(this)">
+                        <h3>{{ faq.question }}</h3>
+                        <span class="faq-toggle">+</span>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-content">{{ faq.answer }}</div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <section class="cta-section scroll-reveal-scale">
+            <p>Still have questions?</p>
+            <div class="cta-buttons">
+                <a href="{{ url_for('contact.contact') }}" class="btn btn-primary">Contact Us</a>
+                <a href="{{ url_for('booking.booking') }}" class="btn btn-secondary">Book a Trial Class</a>
+            </div>
+        </section>
+    {% else %}
+        <section class="no-faqs-message scroll-reveal-scale">
+            <h2>No FAQs Currently Posted</h2>
+            <p>We're working on compiling frequently asked questions. Please contact us if you have any questions.</p>
+            <div class="cta-buttons">
+                <a href="{{ url_for('contact.contact') }}" class="btn btn-primary">Contact Us</a>
+            </div>
+        </section>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    function toggleFAQ(element) {
+        const faqItem = element.parentElement;
+        const wasActive = faqItem.classList.contains('active');
+        
+        // Close all FAQ items
+        document.querySelectorAll('.faq-item').forEach(item => {
+            item.classList.remove('active');
+        });
+        
+        // Open clicked item if it wasn't already active
+        if (!wasActive) {
+            faqItem.classList.add('active');
+        }
+    }
+</script>
+{% endblock %}

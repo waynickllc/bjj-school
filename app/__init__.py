@@ -9,6 +9,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf.csrf import CSRFProtect
 from flask_migrate import Migrate
+from flask_login import LoginManager
 import yaml
 import os
 import sys
@@ -19,6 +20,7 @@ from logging.handlers import RotatingFileHandler
 db = SQLAlchemy()
 csrf = CSRFProtect()
 migrate = Migrate()
+login_manager = LoginManager()
 
 
 def create_app(config_path='config.yaml'):
@@ -73,6 +75,31 @@ def create_app(config_path='config.yaml'):
     csrf.init_app(app)
     migrate.init_app(app, db)
     
+    # Initialize Flask-Login
+    login_manager.init_app(app)
+    login_manager.login_view = 'auth.login'  # Redirect to login page if not authenticated
+    login_manager.login_message = 'Please log in to access this page.'
+    login_manager.login_message_category = 'info'
+    
+    # Configure session timeout (30 minutes)
+    from datetime import timedelta
+    app.config['PERMANENT_SESSION_LIFETIME'] = timedelta(minutes=30)
+    
+    # User loader callback for Flask-Login
+    @login_manager.user_loader
+    def load_user(user_id):
+        """
+        Load user by ID for Flask-Login.
+        
+        Args:
+            user_id: User ID from session
+            
+        Returns:
+            User object or None if not found
+        """
+        from app.models import User
+        return User.query.get(int(user_id))
+    
     # Store Instagram config for later use
     app.config['INSTAGRAM_ACCESS_TOKEN'] = config['instagram']['access_token']
     app.config['INSTAGRAM_USER_ID'] = config['instagram']['user_id']
@@ -85,15 +112,57 @@ def create_app(config_path='config.yaml'):
     from app.routes.main import main_bp
     from app.routes.contact import contact_bp
     from app.routes.booking import booking_bp
+    from app.routes.auth import auth_bp
+    from app.routes.admin import admin_bp
     app.register_blueprint(main_bp)
     app.register_blueprint(contact_bp)
     app.register_blueprint(booking_bp)
+    app.register_blueprint(auth_bp)
+    app.register_blueprint(admin_bp)
     
     # Register error handlers
     from app.error_handlers import register_error_handlers
     register_error_handlers(app)
     
+    # Register context processors
+    register_context_processors(app)
+    
     return app
+
+
+def register_context_processors(app):
+    """
+    Register context processors to make variables available to all templates.
+    
+    Args:
+        app: Flask application instance
+    """
+    @app.context_processor
+    def inject_site_settings():
+        """
+        Inject site settings into all templates.
+        
+        Returns:
+            Dictionary with site settings (banner_url, logo_url, site_name)
+        """
+        from flask import url_for
+        from app.models import SiteSettings
+        
+        site_settings = {
+            'banner_url': None,
+            'logo_url': None,
+            'site_name': 'BJJ SCHOOL'
+        }
+        
+        # Query SiteSettings model from database
+        settings = SiteSettings.query.get(1)
+        if settings:
+            if settings.banner_image_path:
+                site_settings['banner_url'] = url_for('static', filename=settings.banner_image_path)
+            if settings.logo_image_path:
+                site_settings['logo_url'] = url_for('static', filename=settings.logo_image_path)
+        
+        return site_settings
 
 
 def configure_logging(app):

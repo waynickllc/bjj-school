@@ -2,27 +2,54 @@
 
 {% block title %}Book Trial Class - BJJ School{% endblock %}
 
+{% block extra_css %}
+<style>
+    .booking-page {
+        max-width: 700px;
+        margin: 3rem auto;
+        padding: 0 2rem;
+    }
+    
+    .booking-page h1 {
+        font-size: 2.5rem;
+        font-weight: 900;
+        margin-bottom: 1rem;
+        color: var(--secondary);
+    }
+    
+    .booking-page > p {
+        font-size: 1.1rem;
+        color: var(--text-light);
+        margin-bottom: 3rem;
+        line-height: 1.8;
+    }
+    
+    .booking-page form {
+        background: var(--bg-alt);
+        padding: 2.5rem;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px var(--shadow);
+    }
+    
+    @media (max-width: 768px) {
+        .booking-page {
+            margin: 2rem auto;
+        }
+        
+        .booking-page form {
+            padding: 1.5rem;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="booking-page">
-    <h1>Book a Trial Class</h1>
-    <p>Ready to start your Brazilian Jiu-Jitsu journey? Book a free trial class and experience our training firsthand.</p>
+    <h1 class="scroll-reveal">Book a Trial Class</h1>
+    <p class="scroll-reveal">Ready to start your Brazilian Jiu-Jitsu journey? Book a free trial class and experience our training firsthand.</p>
     
-    <!-- Flash messages for confirmation or errors (Requirements 3.4, 3.6) -->
-    {% with messages = get_flashed_messages(with_categories=true) %}
-        {% if messages %}
-            <div class="flash-messages">
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            </div>
-        {% endif %}
-    {% endwith %}
-    
-    <!-- Trial Booking Form (Requirement 3.1) -->
-    <form method="POST" action="{{ url_for('booking.booking') }}" novalidate>
-        {{ form.hidden_tag() }}  {# CSRF token (Requirement 3.5) #}
+    <form method="POST" action="{{ url_for('booking.booking') }}" novalidate class="scroll-reveal-scale">
+        {{ form.hidden_tag() }}
         
         <div class="form-group">
             {{ form.name.label }}
@@ -89,104 +116,4 @@
         </div>
     </form>
 </div>
-
-<style>
-    /* Basic styling for booking form */
-    .booking-page {
-        max-width: 600px;
-        margin: 2rem auto;
-        padding: 0 1rem;
-    }
-    
-    .booking-page h1 {
-        margin-bottom: 1rem;
-    }
-    
-    .booking-page p {
-        margin-bottom: 2rem;
-        color: #666;
-    }
-    
-    .form-group {
-        margin-bottom: 1.5rem;
-    }
-    
-    .form-group label {
-        display: block;
-        margin-bottom: 0.5rem;
-        font-weight: bold;
-    }
-    
-    .form-control {
-        width: 100%;
-        padding: 0.5rem;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 1rem;
-    }
-    
-    .form-control:focus {
-        outline: none;
-        border-color: #007bff;
-        box-shadow: 0 0 0 0.2rem rgba(0,123,255,.25);
-    }
-    
-    .error-messages {
-        margin-top: 0.25rem;
-    }
-    
-    .error {
-        display: block;
-        color: #dc3545;
-        font-size: 0.875rem;
-        margin-top: 0.25rem;
-    }
-    
-    .flash-messages {
-        margin-bottom: 1.5rem;
-    }
-    
-    .alert {
-        padding: 1rem;
-        border-radius: 4px;
-        margin-bottom: 1rem;
-    }
-    
-    .alert-success {
-        background-color: #d4edda;
-        border: 1px solid #c3e6cb;
-        color: #155724;
-    }
-    
-    .alert-error {
-        background-color: #f8d7da;
-        border: 1px solid #f5c6cb;
-        color: #721c24;
-    }
-    
-    .btn {
-        padding: 0.75rem 1.5rem;
-        border: none;
-        border-radius: 4px;
-        font-size: 1rem;
-        cursor: pointer;
-        transition: background-color 0.2s;
-    }
-    
-    .btn-primary {
-        background-color: #007bff;
-        color: white;
-    }
-    
-    .btn-primary:hover {
-        background-color: #0056b3;
-    }
-    
-    /* Responsive design */
-    @media (max-width: 768px) {
-        .booking-page {
-            margin: 1rem auto;
-        }
-    }
-</style>
 {% endblock %}

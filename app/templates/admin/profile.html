@@ -1,0 +1,275 @@
+{% extends "admin/base.html" %}
+
+{% block title %}My Profile - Admin - BJJ School{% endblock %}
+
+{% block extra_css %}
+<style>
+    .profile-preview {
+        margin-top: 1rem;
+        padding: 1rem;
+        background: var(--bg-alt);
+        border-radius: 8px;
+        border: 1px solid var(--border);
+    }
+    
+    .preview-label {
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    
+    .preview-image {
+        max-width: 300px;
+        max-height: 300px;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px var(--shadow);
+        margin-top: 0.5rem;
+        display: block;
+    }
+    
+    .preview-empty {
+        padding: 2rem;
+        text-align: center;
+        color: var(--text-light);
+        background: var(--bg);
+        border: 2px dashed var(--border);
+        border-radius: 4px;
+        margin-top: 0.5rem;
+        max-width: 300px;
+    }
+    
+    .preview-empty i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        opacity: 0.5;
+    }
+    
+    .photo-preview {
+        margin-bottom: 2rem;
+    }
+    
+    .form-checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+        padding: 0.75rem;
+        background: var(--bg-alt);
+        border-radius: 4px;
+    }
+    
+    .form-checkbox-group input[type="checkbox"] {
+        width: auto;
+        margin: 0;
+    }
+    
+    .form-checkbox-group label {
+        margin: 0;
+        font-weight: normal;
+        cursor: pointer;
+    }
+    
+    .profile-info {
+        background: #e3f2fd;
+        border-left: 4px solid var(--primary);
+        padding: 1rem;
+        margin-bottom: 2rem;
+        border-radius: 4px;
+    }
+    
+    .profile-info h3 {
+        margin: 0 0 0.5rem 0;
+        color: var(--primary-dark);
+        font-size: 1.1rem;
+    }
+    
+    .profile-info p {
+        margin: 0;
+        color: var(--text);
+        line-height: 1.6;
+    }
+    
+    .profile-info ul {
+        margin: 0.5rem 0 0 1.5rem;
+        color: var(--text);
+    }
+    
+    .head-instructor-badge {
+        display: inline-block;
+        background: var(--primary);
+        color: white;
+        padding: 0.25rem 0.75rem;
+        border-radius: 4px;
+        font-size: 0.875rem;
+        font-weight: 600;
+        margin-left: 0.5rem;
+    }
+    
+    .current-info {
+        background: var(--bg-alt);
+        padding: 1rem;
+        border-radius: 4px;
+        margin-bottom: 1rem;
+    }
+    
+    .current-info p {
+        margin: 0.5rem 0;
+        color: var(--text);
+    }
+    
+    .current-info strong {
+        color: var(--text-dark);
+    }
+    
+    .bio-preview {
+        background: var(--bg);
+        padding: 1rem;
+        border-radius: 4px;
+        border: 1px solid var(--border);
+        margin-top: 0.5rem;
+        max-height: 200px;
+        overflow-y: auto;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+    }
+</style>
+{% endblock %}
+
+{% block admin_content %}
+<div class="admin-header">
+    <h1>
+        My Profile
+        {% if profile.is_head_instructor %}
+        <span class="head-instructor-badge">HEAD INSTRUCTOR</span>
+        {% endif %}
+    </h1>
+    <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+</div>
+
+<div class="profile-info">
+    <h3>About Your Profile</h3>
+    <p>Manage your instructor profile information that will be displayed on the public instructor page:</p>
+    <ul>
+        <li><strong>Profile Photo:</strong> Your photo displayed on the instructor page (optional)</li>
+        <li><strong>Biography:</strong> Tell visitors about your background and qualifications (10-5000 characters)</li>
+        <li><strong>Title/Designation:</strong> Your role (e.g., "Instructor", "Professor", "Black Belt")</li>
+        <li><strong>Head Instructor:</strong> Only one instructor can be designated as head instructor at a time</li>
+    </ul>
+    <p><strong>Supported photo formats:</strong> JPEG, PNG, GIF, WebP | <strong>Maximum file size:</strong> 5MB</p>
+</div>
+
+<!-- Current Profile Preview -->
+<div class="current-info">
+    <h3>Current Profile Information</h3>
+    <p><strong>Username:</strong> {{ current_user.username }}</p>
+    <p><strong>Email:</strong> {{ current_user.email }}</p>
+    <p><strong>Title:</strong> {{ profile.title }}</p>
+    <p><strong>Biography Length:</strong> {{ profile.biography|length }} characters</p>
+    {% if profile.biography %}
+    <div class="bio-preview">{{ profile.biography }}</div>
+    {% endif %}
+</div>
+
+<div class="admin-form-container">
+    <form method="POST" enctype="multipart/form-data" class="admin-form">
+        {{ form.hidden_tag() }}
+        
+        <!-- Profile Photo Section -->
+        <div class="form-section">
+            <h2>Profile Photo</h2>
+            
+            {% if profile.photo_path %}
+            <div class="profile-preview photo-preview">
+                <span class="preview-label">Current Photo:</span>
+                <img src="{{ url_for('static', filename=profile.photo_path) }}" 
+                     alt="Current Profile Photo" 
+                     class="preview-image">
+            </div>
+            
+            <div class="form-checkbox-group">
+                {{ form.remove_photo() }}
+                {{ form.remove_photo.label() }}
+            </div>
+            {% else %}
+            <div class="profile-preview photo-preview">
+                <div class="preview-empty">
+                    <p>👤</p>
+                    <p>No profile photo uploaded</p>
+                    <p><small>A default placeholder will be shown</small></p>
+                </div>
+            </div>
+            {% endif %}
+            
+            <div class="form-group">
+                {{ form.photo.label(class="form-label") }}
+                {{ form.photo(class="form-input" + (" is-invalid" if form.photo.errors else "")) }}
+                {% if form.photo.errors %}
+                    <div class="form-error">
+                        {% for error in form.photo.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <small class="form-help">Upload a new profile photo to replace the current one</small>
+            </div>
+        </div>
+        
+        <!-- Biography Section -->
+        <div class="form-section">
+            <h2>Biography</h2>
+            
+            <div class="form-group">
+                {{ form.biography.label(class="form-label") }}
+                {{ form.biography(class="form-input" + (" is-invalid" if form.biography.errors else ""), rows=10) }}
+                {% if form.biography.errors %}
+                    <div class="form-error">
+                        {% for error in form.biography.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <small class="form-help">Tell visitors about your background, qualifications, and experience (10-5000 characters)</small>
+            </div>
+        </div>
+        
+        <!-- Title/Designation Section -->
+        <div class="form-section">
+            <h2>Title/Designation</h2>
+            
+            <div class="form-group">
+                {{ form.title.label(class="form-label") }}
+                {{ form.title(class="form-input" + (" is-invalid" if form.title.errors else "")) }}
+                {% if form.title.errors %}
+                    <div class="form-error">
+                        {% for error in form.title.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <small class="form-help">Your role or rank (e.g., "Instructor", "Head Instructor", "Professor", "Black Belt")</small>
+            </div>
+        </div>
+        
+        <!-- Head Instructor Designation Section -->
+        <div class="form-section">
+            <h2>Head Instructor Designation</h2>
+            
+            <div class="form-checkbox-group">
+                {{ form.is_head_instructor() }}
+                {{ form.is_head_instructor.label() }}
+            </div>
+            
+            <small class="form-help" style="display: block; margin-top: 0.5rem; padding-left: 0.75rem;">
+                <strong>Note:</strong> Only one instructor can be designated as Head Instructor/Professor at a time. 
+                If you check this box, the designation will be removed from any other instructor.
+            </small>
+        </div>
+        
+        <div class="form-actions">
+            {{ form.submit(class="btn btn-primary") }}
+            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,217 @@
+{% extends "base.html" %}
+
+{% block title %}Announcements - BJJ School{% endblock %}
+
+{% block extra_css %}
+<style>
+    .announcements-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 3rem 2rem;
+    }
+    
+    .announcements-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+    
+    .announcements-header h1 {
+        font-size: 3rem;
+        font-weight: 900;
+        color: var(--secondary);
+        margin-bottom: 0.5rem;
+    }
+    
+    .announcements-header p {
+        font-size: 1.2rem;
+        color: var(--text-light);
+    }
+    
+    .no-announcements-message {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: var(--bg-alt);
+        border-radius: 8px;
+        margin: 2rem 0;
+    }
+    
+    .no-announcements-message h2 {
+        font-size: 2rem;
+        color: var(--secondary);
+        margin-bottom: 1rem;
+    }
+    
+    .no-announcements-message p {
+        font-size: 1.1rem;
+        color: var(--text-light);
+        margin-bottom: 2rem;
+    }
+    
+    .announcements-list {
+        display: grid;
+        gap: 2rem;
+    }
+    
+    .announcement-card {
+        background: var(--bg-alt);
+        padding: 2.5rem;
+        border-radius: 8px;
+        border-left: 4px solid var(--primary);
+        box-shadow: 0 2px 8px var(--shadow);
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+    
+    .announcement-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 6px 16px var(--shadow);
+    }
+    
+    .announcement-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1.5rem;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .announcement-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--secondary);
+        margin: 0;
+        flex: 1;
+    }
+    
+    .announcement-date {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.95rem;
+        color: var(--text-light);
+        white-space: nowrap;
+    }
+    
+    .announcement-date-icon {
+        color: var(--primary);
+        font-weight: 700;
+    }
+    
+    .announcement-content {
+        font-size: 1.1rem;
+        line-height: 1.8;
+        color: var(--text);
+        white-space: pre-wrap;
+    }
+    
+    .cta-section {
+        text-align: center;
+        padding: 3rem 2rem;
+        background: linear-gradient(135deg, var(--secondary) 0%, var(--primary-dark) 100%);
+        border-radius: 8px;
+        color: var(--bg);
+        margin-top: 3rem;
+    }
+    
+    .cta-section p {
+        font-size: 1.5rem;
+        margin-bottom: 2rem;
+        font-weight: 600;
+    }
+    
+    .cta-section .cta-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .cta-section .btn-secondary {
+        background: transparent;
+        border: 2px solid var(--bg);
+        color: var(--bg);
+    }
+    
+    .cta-section .btn-secondary:hover {
+        background: var(--bg);
+        color: var(--secondary);
+    }
+    
+    @media (max-width: 768px) {
+        .announcements-container {
+            padding: 2rem 1rem;
+        }
+        
+        .announcements-header h1 {
+            font-size: 2.5rem;
+        }
+        
+        .announcement-card {
+            padding: 1.5rem;
+        }
+        
+        .announcement-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .announcement-title {
+            font-size: 1.5rem;
+        }
+        
+        .cta-section .cta-buttons {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .cta-section .btn {
+            width: 100%;
+            max-width: 300px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="announcements-container">
+    <section class="announcements-header scroll-reveal">
+        <h1>Announcements</h1>
+        <p>Stay updated with the latest news and events from our school</p>
+    </section>
+
+    {% if has_announcements %}
+        <div class="announcements-list">
+            {% for announcement in announcements %}
+                <article class="announcement-card scroll-reveal-left animate-delay-{{ loop.index if loop.index <= 6 else 6 }}">
+                    <div class="announcement-header">
+                        <h2 class="announcement-title">{{ announcement.title }}</h2>
+                        <div class="announcement-date">
+                            <span class="announcement-date-icon">📅</span>
+                            <time datetime="{{ announcement.published_date.isoformat() }}">
+                                {{ announcement.published_date.strftime('%B %d, %Y') }}
+                            </time>
+                        </div>
+                    </div>
+                    <div class="announcement-content">{{ announcement.content }}</div>
+                </article>
+            {% endfor %}
+        </div>
+
+        <section class="cta-section scroll-reveal-scale">
+            <p>Ready to join our community?</p>
+            <div class="cta-buttons">
+                <a href="{{ url_for('booking.booking') }}" class="btn btn-primary">Book a Trial Class</a>
+                <a href="{{ url_for('contact.contact') }}" class="btn btn-secondary">Contact Us</a>
+            </div>
+        </section>
+    {% else %}
+        <section class="no-announcements-message scroll-reveal-scale">
+            <h2>No Announcements Currently Posted</h2>
+            <p>We don't have any announcements at the moment. Please check back soon or contact us for more information.</p>
+            <div class="cta-buttons">
+                <a href="{{ url_for('contact.contact') }}" class="btn btn-primary">Contact Us</a>
+            </div>
+        </section>
+    {% endif %}
+</div>
+{% endblock %}

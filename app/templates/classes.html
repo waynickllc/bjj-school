@@ -1,0 +1,203 @@
+{% extends "base.html" %}
+
+{% block title %}Classes - BJJ School{% endblock %}
+
+{% block extra_css %}
+<style>
+    .classes-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 3rem 2rem;
+    }
+    
+    .classes-header {
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+    
+    .classes-header h1 {
+        font-size: 3rem;
+        font-weight: 900;
+        color: var(--secondary);
+        margin-bottom: 0.5rem;
+    }
+    
+    .classes-header p {
+        font-size: 1.2rem;
+        color: var(--text-light);
+    }
+    
+    .no-classes-message {
+        text-align: center;
+        padding: 4rem 2rem;
+        background: var(--bg-alt);
+        border-radius: 8px;
+        margin: 2rem 0;
+    }
+    
+    .no-classes-message h2 {
+        font-size: 2rem;
+        color: var(--secondary);
+        margin-bottom: 1rem;
+    }
+    
+    .no-classes-message p {
+        font-size: 1.1rem;
+        color: var(--text-light);
+        margin-bottom: 2rem;
+    }
+    
+    .day-section {
+        margin-bottom: 3rem;
+    }
+    
+    .day-header {
+        font-size: 2rem;
+        font-weight: 900;
+        color: var(--primary);
+        margin-bottom: 1.5rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 3px solid var(--primary);
+    }
+    
+    .class-list {
+        display: grid;
+        gap: 1.5rem;
+    }
+    
+    .class-card {
+        background: var(--bg-alt);
+        padding: 2rem;
+        border-radius: 8px;
+        border-left: 4px solid var(--primary);
+        box-shadow: 0 2px 8px var(--shadow);
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+    
+    .class-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 6px 16px var(--shadow);
+    }
+    
+    .class-name {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--secondary);
+        margin-bottom: 1rem;
+    }
+    
+    .class-time {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 1.1rem;
+        color: var(--text);
+    }
+    
+    .class-time-icon {
+        color: var(--primary);
+        font-weight: 700;
+    }
+    
+    .cta-section {
+        text-align: center;
+        padding: 3rem 2rem;
+        background: linear-gradient(135deg, var(--secondary) 0%, var(--primary-dark) 100%);
+        border-radius: 8px;
+        color: var(--bg);
+        margin-top: 3rem;
+    }
+    
+    .cta-section p {
+        font-size: 1.5rem;
+        margin-bottom: 2rem;
+        font-weight: 600;
+    }
+    
+    .cta-section .cta-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    .cta-section .btn-secondary {
+        background: transparent;
+        border: 2px solid var(--bg);
+        color: var(--bg);
+    }
+    
+    .cta-section .btn-secondary:hover {
+        background: var(--bg);
+        color: var(--secondary);
+    }
+    
+    @media (max-width: 768px) {
+        .classes-container {
+            padding: 2rem 1rem;
+        }
+        
+        .classes-header h1 {
+            font-size: 2.5rem;
+        }
+        
+        .class-card {
+            padding: 1.5rem;
+        }
+        
+        .cta-section .cta-buttons {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .cta-section .btn {
+            width: 100%;
+            max-width: 300px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="classes-container">
+    <section class="classes-header scroll-reveal">
+        <h1>Class Schedule</h1>
+        <p>Join us for world-class Brazilian Jiu-Jitsu training</p>
+    </section>
+
+    {% if has_classes %}
+        {% for day, classes in classes_by_day %}
+            <section class="day-section scroll-reveal">
+                <h2 class="day-header">{{ day }}</h2>
+                <div class="class-list">
+                    {% for class in classes %}
+                        <div class="class-card scroll-reveal-left animate-delay-{{ loop.index if loop.index <= 6 else 6 }}">
+                            <h3 class="class-name">{{ class.name }}</h3>
+                            <div class="class-time">
+                                <span class="class-time-icon">🕐</span>
+                                <span>{{ class.start_time.strftime('%I:%M %p') }} - {{ class.end_time.strftime('%I:%M %p') }}</span>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+        {% endfor %}
+
+        <section class="cta-section scroll-reveal-scale">
+            <p>Ready to join a class?</p>
+            <div class="cta-buttons">
+                <a href="{{ url_for('booking.booking') }}" class="btn btn-primary">Book a Trial Class</a>
+                <a href="{{ url_for('contact.contact') }}" class="btn btn-secondary">Contact Us</a>
+            </div>
+        </section>
+    {% else %}
+        <section class="no-classes-message scroll-reveal-scale">
+            <h2>No Classes Currently Scheduled</h2>
+            <p>We're working on our class schedule. Please check back soon or contact us for more information.</p>
+            <div class="cta-buttons">
+                <a href="{{ url_for('contact.contact') }}" class="btn btn-primary">Contact Us</a>
+            </div>
+        </section>
+    {% endif %}
+</div>
+{% endblock %}

@@ -2,51 +2,216 @@
 
 {% block title %}Home - BJJ School{% endblock %}
 
+{% block extra_css %}
+<style>
+    /* Banner Section */
+    .banner {
+        width: 100%;
+        max-height: 500px;
+        overflow: hidden;
+        margin-bottom: 2rem;
+    }
+    
+    .banner img {
+        width: 100%;
+        height: auto;
+        display: block;
+        object-fit: cover;
+    }
+    
+    /* Hero Section */
+    .hero {
+        background: linear-gradient(135deg, var(--secondary) 0%, var(--primary-dark) 100%);
+        color: var(--bg);
+        padding: 6rem 2rem;
+        text-align: center;
+        margin-bottom: 4rem;
+    }
+    
+    .hero h1 {
+        font-size: 3.5rem;
+        font-weight: 900;
+        margin-bottom: 1rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+    }
+    
+    .hero p {
+        font-size: 1.5rem;
+        margin-bottom: 2rem;
+        opacity: 0.9;
+    }
+    
+    .cta-buttons {
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+    
+    /* Instagram Section */
+    .instagram-carousel {
+        padding: 4rem 2rem;
+        background: var(--bg-alt);
+    }
+    
+    .instagram-carousel h2 {
+        text-align: center;
+        font-size: 2.5rem;
+        font-weight: 900;
+        margin-bottom: 3rem;
+        color: var(--secondary);
+    }
+    
+    .carousel {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    
+    .carousel-item {
+        position: relative;
+        overflow: hidden;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px var(--shadow);
+        transition: transform 0.3s, box-shadow 0.3s;
+    }
+    
+    .carousel-item:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 8px 24px var(--shadow-lg);
+    }
+    
+    .carousel-item img {
+        width: 100%;
+        height: 300px;
+        object-fit: cover;
+        display: block;
+    }
+    
+    .carousel-item .caption {
+        padding: 1rem;
+        background: var(--bg);
+        color: var(--text);
+        font-size: 0.9rem;
+        line-height: 1.5;
+    }
+    
+    .instagram-error,
+    .instagram-empty {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 2rem;
+        text-align: center;
+        background: var(--bg);
+        border-radius: 8px;
+        border: 2px solid var(--border);
+    }
+    
+    /* About Preview */
+    .about-preview {
+        padding: 4rem 2rem;
+        text-align: center;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .about-preview h2 {
+        font-size: 2.5rem;
+        font-weight: 900;
+        margin-bottom: 1.5rem;
+        color: var(--secondary);
+    }
+    
+    .about-preview p {
+        font-size: 1.2rem;
+        line-height: 1.8;
+        color: var(--text-light);
+        margin-bottom: 2rem;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+        .hero h1 {
+            font-size: 2.5rem;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+        }
+        
+        .cta-buttons {
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .cta-buttons .btn {
+            width: 100%;
+            max-width: 300px;
+        }
+        
+        .carousel {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="home-container">
-    <section class="hero">
-        <h1>Welcome to Our BJJ School</h1>
-        <p>Train with experienced instructors and join our community</p>
-        <div class="cta-buttons">
-            <a href="{{ url_for('booking.booking') }}" class="btn btn-primary">Book a Trial Class</a>
-            <a href="{{ url_for('contact.contact') }}" class="btn btn-secondary">Contact Us</a>
+    {% if banner_url %}
+    <!-- Banner Image Section -->
+    <section class="banner fade-in">
+        <img src="{{ banner_url }}" alt="{{ site_name }} Banner" loading="eager">
+    </section>
+    {% endif %}
+    
+    <section class="hero fade-in">
+        <div class="container">
+            <h1 class="fade-in-up">Welcome to Our BJJ School</h1>
+            <p class="fade-in-up animate-delay-1">Train with experienced instructors and join our community</p>
+            <div class="cta-buttons fade-in-up animate-delay-2">
+                <a href="{{ url_for('booking.booking') }}" class="btn btn-primary">Book a Trial Class</a>
+                <a href="{{ url_for('contact.contact') }}" class="btn btn-secondary">Contact Us</a>
+            </div>
         </div>
     </section>
 
     <section class="instagram-carousel">
-        <h2>Our Community</h2>
-        
-        {% if instagram_error %}
-            <!-- Display fallback message when Instagram photos unavailable -->
-            <div class="instagram-error alert alert-info">
-                <p>{{ instagram_error }}</p>
-            </div>
-        {% elif instagram_photos and instagram_photos|length > 0 %}
-            <!-- Display Instagram photos in a carousel -->
-            <div class="carousel">
-                {% for photo in instagram_photos %}
-                    <div class="carousel-item">
-                        <a href="{{ photo.permalink }}" target="_blank" rel="noopener noreferrer">
-                            <img src="{{ photo.media_url }}" alt="{{ photo.caption if photo.caption else 'Instagram photo from BJJ School' }}" loading="lazy">
-                            {% if photo.caption %}
-                                <p class="caption">{{ photo.caption[:100] }}{% if photo.caption|length > 100 %}...{% endif %}</p>
-                            {% endif %}
-                        </a>
-                    </div>
-                {% endfor %}
-            </div>
-        {% else %}
-            <!-- Display message when no photos available -->
-            <div class="instagram-empty alert alert-info">
-                <p>No photos available at this time. Check back soon!</p>
-            </div>
-        {% endif %}
+        <div class="container">
+            <h2 class="scroll-reveal">Our Community</h2>
+            
+            {% if instagram_error %}
+                <div class="instagram-error scroll-reveal">
+                    <p>{{ instagram_error }}</p>
+                </div>
+            {% elif instagram_photos and instagram_photos|length > 0 %}
+                <div class="carousel">
+                    {% for photo in instagram_photos %}
+                        <div class="carousel-item scroll-reveal-scale animate-delay-{{ loop.index if loop.index <= 6 else 6 }}">
+                            <a href="{{ photo.permalink }}" target="_blank" rel="noopener noreferrer">
+                                <img src="{{ photo.media_url }}" alt="{{ photo.caption if photo.caption else 'Instagram photo from BJJ School' }}" loading="lazy">
+                                {% if photo.caption %}
+                                    <p class="caption">{{ photo.caption[:100] }}{% if photo.caption|length > 100 %}...{% endif %}</p>
+                                {% endif %}
+                            </a>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="instagram-empty scroll-reveal">
+                    <p>No photos available at this time. Check back soon!</p>
+                </div>
+            {% endif %}
+        </div>
     </section>
 
-    <section class="about-preview">
+    <section class="about-preview scroll-reveal">
         <h2>About Our School</h2>
         <p>We offer high-quality Brazilian Jiu-Jitsu training for all skill levels, from beginners to advanced practitioners.</p>
-        <a href="{{ url_for('main.instructor') }}" class="btn btn-link">Meet Our Instructor</a>
+        <a href="{{ url_for('main.instructor') }}" class="btn btn-link">Meet Our Instructor →</a>
     </section>
 </div>
 {% endblock %}

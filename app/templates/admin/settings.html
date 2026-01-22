@@ -1,0 +1,203 @@
+{% extends "admin/base.html" %}
+
+{% block title %}Site Settings - Admin - BJJ School{% endblock %}
+
+{% block extra_css %}
+<style>
+    .settings-preview {
+        margin-top: 1rem;
+        padding: 1rem;
+        background: var(--bg-alt);
+        border-radius: 8px;
+        border: 1px solid var(--border);
+    }
+    
+    .preview-label {
+        font-weight: 600;
+        color: var(--text);
+        margin-bottom: 0.5rem;
+        display: block;
+    }
+    
+    .preview-image {
+        max-width: 100%;
+        max-height: 300px;
+        border-radius: 4px;
+        box-shadow: 0 2px 8px var(--shadow);
+        margin-top: 0.5rem;
+    }
+    
+    .preview-empty {
+        padding: 2rem;
+        text-align: center;
+        color: var(--text-light);
+        background: var(--bg);
+        border: 2px dashed var(--border);
+        border-radius: 4px;
+        margin-top: 0.5rem;
+    }
+    
+    .banner-preview {
+        margin-bottom: 2rem;
+    }
+    
+    .logo-preview {
+        margin-bottom: 2rem;
+    }
+    
+    .logo-preview .preview-image {
+        max-height: 150px;
+    }
+    
+    .form-checkbox-group {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+        padding: 0.75rem;
+        background: var(--bg-alt);
+        border-radius: 4px;
+    }
+    
+    .form-checkbox-group input[type="checkbox"] {
+        width: auto;
+        margin: 0;
+    }
+    
+    .form-checkbox-group label {
+        margin: 0;
+        font-weight: normal;
+        cursor: pointer;
+    }
+    
+    .settings-info {
+        background: #e3f2fd;
+        border-left: 4px solid var(--primary);
+        padding: 1rem;
+        margin-bottom: 2rem;
+        border-radius: 4px;
+    }
+    
+    .settings-info h3 {
+        margin: 0 0 0.5rem 0;
+        color: var(--primary-dark);
+        font-size: 1.1rem;
+    }
+    
+    .settings-info p {
+        margin: 0;
+        color: var(--text);
+        line-height: 1.6;
+    }
+    
+    .settings-info ul {
+        margin: 0.5rem 0 0 1.5rem;
+        color: var(--text);
+    }
+</style>
+{% endblock %}
+
+{% block admin_content %}
+<div class="admin-header">
+    <h1>Site Settings</h1>
+    <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary">Back to Dashboard</a>
+</div>
+
+<div class="settings-info">
+    <h3>About Site Settings</h3>
+    <p>Manage your website's visual branding elements:</p>
+    <ul>
+        <li><strong>Banner Image:</strong> Displayed prominently at the top of the homepage</li>
+        <li><strong>Logo Image:</strong> Displayed in the navigation bar across all pages</li>
+    </ul>
+    <p><strong>Supported formats:</strong> Banner (JPEG, PNG, GIF, WebP) | Logo (JPEG, PNG, GIF, WebP, SVG)</p>
+    <p><strong>Maximum file size:</strong> 5MB</p>
+</div>
+
+<div class="admin-form-container">
+    <form method="POST" enctype="multipart/form-data" class="admin-form">
+        {{ form.hidden_tag() }}
+        
+        <!-- Banner Image Section -->
+        <div class="form-section">
+            <h2>Banner Image</h2>
+            
+            {% if settings.banner_image_path %}
+            <div class="settings-preview banner-preview">
+                <span class="preview-label">Current Banner:</span>
+                <img src="{{ url_for('static', filename=settings.banner_image_path) }}" 
+                     alt="Current Banner" 
+                     class="preview-image">
+            </div>
+            
+            <div class="form-checkbox-group">
+                {{ form.remove_banner() }}
+                {{ form.remove_banner.label() }}
+            </div>
+            {% else %}
+            <div class="settings-preview banner-preview">
+                <div class="preview-empty">
+                    <p>No banner image uploaded</p>
+                </div>
+            </div>
+            {% endif %}
+            
+            <div class="form-group">
+                {{ form.banner_image.label(class="form-label") }}
+                {{ form.banner_image(class="form-input" + (" is-invalid" if form.banner_image.errors else "")) }}
+                {% if form.banner_image.errors %}
+                    <div class="form-error">
+                        {% for error in form.banner_image.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <small class="form-help">Upload a new banner image to replace the current one</small>
+            </div>
+        </div>
+        
+        <!-- Logo Image Section -->
+        <div class="form-section">
+            <h2>Logo Image</h2>
+            
+            {% if settings.logo_image_path %}
+            <div class="settings-preview logo-preview">
+                <span class="preview-label">Current Logo:</span>
+                <img src="{{ url_for('static', filename=settings.logo_image_path) }}" 
+                     alt="Current Logo" 
+                     class="preview-image">
+            </div>
+            
+            <div class="form-checkbox-group">
+                {{ form.remove_logo() }}
+                {{ form.remove_logo.label() }}
+            </div>
+            {% else %}
+            <div class="settings-preview logo-preview">
+                <div class="preview-empty">
+                    <p>No logo image uploaded</p>
+                </div>
+            </div>
+            {% endif %}
+            
+            <div class="form-group">
+                {{ form.logo_image.label(class="form-label") }}
+                {{ form.logo_image(class="form-input" + (" is-invalid" if form.logo_image.errors else "")) }}
+                {% if form.logo_image.errors %}
+                    <div class="form-error">
+                        {% for error in form.logo_image.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+                <small class="form-help">Upload a new logo image to replace the current one</small>
+            </div>
+        </div>
+        
+        <div class="form-actions">
+            {{ form.submit(class="btn btn-primary") }}
+            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -6,109 +6,85 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{% block title %}BJJ School{% endblock %}</title>
     
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    
-    <!-- Custom CSS -->
-    <style>
-        body {
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-        main {
-            flex: 1;
-        }
-        .navbar-brand {
-            font-weight: bold;
-        }
-        footer {
-            background-color: #f8f9fa;
-            padding: 2rem 0;
-            margin-top: 3rem;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
     
     {% block extra_css %}{% endblock %}
 </head>
 <body>
     <!-- Navigation Menu -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar">
         <div class="container">
-            <a class="navbar-brand" href="{{ url_for('main.home') }}">BJJ School</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" 
-                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
+            <a class="navbar-brand" href="{{ url_for('main.home') }}">
+                {% if logo_url %}
+                    <img src="{{ logo_url }}" alt="{{ site_name }}" class="navbar-logo">
+                {% else %}
+                    {{ site_name }}
+                {% endif %}
+            </a>
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+                <span></span>
+                <span></span>
+                <span></span>
             </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link {% if request.endpoint == 'main.home' %}active{% endif %}" 
-                           href="{{ url_for('main.home') }}">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if request.endpoint == 'main.instructor' %}active{% endif %}" 
-                           href="{{ url_for('main.instructor') }}">Instructor</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if request.endpoint == 'contact.contact' %}active{% endif %}" 
-                           href="{{ url_for('contact.contact') }}">Contact</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link {% if request.endpoint == 'booking.booking' %}active{% endif %}" 
-                           href="{{ url_for('booking.booking') }}">Book Trial</a>
-                    </li>
-                </ul>
-            </div>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="{{ url_for('main.home') }}" class="{% if request.endpoint == 'main.home' %}active{% endif %}">Home</a></li>
+                <li><a href="{{ url_for('main.instructor') }}" class="{% if request.endpoint == 'main.instructor' %}active{% endif %}">Instructor</a></li>
+                <li><a href="{{ url_for('main.classes') }}" class="{% if request.endpoint == 'main.classes' %}active{% endif %}">Classes</a></li>
+                <li><a href="{{ url_for('main.announcements') }}" class="{% if request.endpoint == 'main.announcements' %}active{% endif %}">Announcements</a></li>
+                <li><a href="{{ url_for('main.faq') }}" class="{% if request.endpoint == 'main.faq' %}active{% endif %}">FAQ</a></li>
+                <li><a href="{{ url_for('contact.contact') }}" class="{% if request.endpoint == 'contact.contact' %}active{% endif %}">Contact</a></li>
+                <li><a href="{{ url_for('booking.booking') }}" class="{% if request.endpoint == 'booking.booking' %}active{% endif %}" class="btn-cta">Book Trial</a></li>
+            </ul>
         </div>
     </nav>
     
     <!-- Flash Messages -->
-    <div class="container mt-3">
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            <div class="flash-container">
                 {% for category, message in messages %}
-                    <div class="alert alert-{{ 'success' if category == 'success' else 'danger' if category == 'error' else 'info' }} alert-dismissible fade show" role="alert">
+                    <div class="alert alert-{{ 'success' if category == 'success' else 'error' if category == 'error' else 'info' }}">
                         {{ message }}
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <button class="alert-close" onclick="this.parentElement.remove()">&times;</button>
                     </div>
                 {% endfor %}
-            {% endif %}
-        {% endwith %}
-    </div>
+            </div>
+        {% endif %}
+    {% endwith %}
     
     <!-- Main Content -->
-    <main class="container my-4">
+    <main>
         {% block content %}{% endblock %}
     </main>
     
     <!-- Footer -->
-    <footer class="mt-auto">
+    <footer>
         <div class="container">
-            <div class="row">
-                <div class="col-md-6">
-                    <h5>BJJ School</h5>
-                    <p class="text-muted">Quality Brazilian Jiu-Jitsu instruction for all levels.</p>
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>BJJ SCHOOL</h3>
+                    <p>Quality Brazilian Jiu-Jitsu instruction for all levels.</p>
                 </div>
-                <div class="col-md-6 text-md-end">
-                    <h5>Quick Links</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="{{ url_for('main.home') }}" class="text-decoration-none">Home</a></li>
-                        <li><a href="{{ url_for('main.instructor') }}" class="text-decoration-none">Instructor</a></li>
-                        <li><a href="{{ url_for('contact.contact') }}" class="text-decoration-none">Contact</a></li>
-                        <li><a href="{{ url_for('booking.booking') }}" class="text-decoration-none">Book Trial</a></li>
+                <div class="footer-section">
+                    <h4>Quick Links</h4>
+                    <ul>
+                        <li><a href="{{ url_for('main.home') }}">Home</a></li>
+                        <li><a href="{{ url_for('main.instructor') }}">Instructor</a></li>
+                        <li><a href="{{ url_for('main.classes') }}">Classes</a></li>
+                        <li><a href="{{ url_for('main.announcements') }}">Announcements</a></li>
+                        <li><a href="{{ url_for('main.faq') }}">FAQ</a></li>
+                        <li><a href="{{ url_for('contact.contact') }}">Contact</a></li>
+                        <li><a href="{{ url_for('booking.booking') }}">Book Trial</a></li>
                     </ul>
                 </div>
             </div>
-            <hr>
-            <div class="text-center text-muted">
+            <div class="footer-bottom">
                 <p>&copy; 2024 BJJ School. All rights reserved.</p>
             </div>
         </div>
     </footer>
     
-    <!-- Bootstrap JS Bundle (includes Popper) -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
     
     {% block extra_js %}{% endblock %}
 </body>

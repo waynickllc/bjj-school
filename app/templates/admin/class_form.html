@@ -1,0 +1,71 @@
+{% extends "admin/base.html" %}
+
+{% block title %}{{ action }} Class - Admin - BJJ School{% endblock %}
+
+{% block admin_content %}
+<div class="admin-header">
+    <h1>{{ action }} Class</h1>
+    <a href="{{ url_for('admin.list_classes') }}" class="btn btn-secondary">Back to Classes</a>
+</div>
+
+<div class="admin-form-container">
+    <form method="POST" class="admin-form">
+        {{ form.hidden_tag() }}
+        
+        <div class="form-group">
+            {{ form.name.label(class="form-label") }}
+            {{ form.name(class="form-input" + (" is-invalid" if form.name.errors else "")) }}
+            {% if form.name.errors %}
+                <div class="form-error">
+                    {% for error in form.name.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            {{ form.day_of_week.label(class="form-label") }}
+            {{ form.day_of_week(class="form-select" + (" is-invalid" if form.day_of_week.errors else "")) }}
+            {% if form.day_of_week.errors %}
+                <div class="form-error">
+                    {% for error in form.day_of_week.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                {{ form.start_time.label(class="form-label") }}
+                {{ form.start_time(class="form-input" + (" is-invalid" if form.start_time.errors else "")) }}
+                {% if form.start_time.errors %}
+                    <div class="form-error">
+                        {% for error in form.start_time.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                {{ form.end_time.label(class="form-label") }}
+                {{ form.end_time(class="form-input" + (" is-invalid" if form.end_time.errors else "")) }}
+                {% if form.end_time.errors %}
+                    <div class="form-error">
+                        {% for error in form.end_time.errors %}
+                            <span>{{ error }}</span>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="form-actions">
+            {{ form.submit(class="btn btn-primary") }}
+            <a href="{{ url_for('admin.list_classes') }}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
