@@ -12,6 +12,8 @@ services:
     depends_on:
       - db
     restart: unless-stopped
+    networks:
+      - bjj-network
 
   db:
     image: mysql:8.0
@@ -22,9 +24,13 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - mysql_data:/var/lib/mysql
-    ports:
-      - "3306:3306"
     restart: unless-stopped
+    networks:
+      - bjj-network
 
 volumes:
   mysql_data:
+
+networks:
+  bjj-network:
+    driver: bridge
